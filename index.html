@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
+
+        <title>Log Browser</title>
+
+        <link type="text/css" rel="stylesheet" media="all" href="css/style.css">
+        <link type="text/css" rel="stylesheet" media="all" href="libraries/bootstrap/css/bootstrap.min.css">
+        <link type="text/css" rel="stylesheet" media="all" href="libraries/bootstrap/css/bootstrap-datepicker.min.css">
+        <link type="text/css" rel="stylesheet" media="all" href="libraries/bootstrap/css/bootstrap-toggle.min.css">
+        <link type="text/css" rel="stylesheet" media="all" href="libraries/jquery/css/jquery.timepicker.min.css">
+        <link type="text/css" rel="stylesheet" media="all" href="libraries/jquery/css/jquery-ui.min.css">
+        <link type="text/css" rel="stylesheet" media="all" href="libraries/datatables/css/datatables.min.css">
+
+        <script type="text/javascript" src="libraries/jquery/js/jquery-3.1.js"></script>
+        <script type="text/javascript" src="libraries/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="libraries/w3.js"></script>
+        <script type="text/javascript" src="libraries/bootstrap/js/bootstrap-datepicker.min.js"></script>
+        <script type="text/javascript" src="libraries/bootstrap/js/bootstrap-toggle.min.js"></script>
+        <script type="text/javascript" src="libraries/jquery/js/jquery.timepicker.min.js"></script>
+        <script type="text/javascript" src="libraries/datepair.min.js"></script>
+        <script type="text/javascript" src="libraries/moment.min.js"></script>
+        <script type="text/javascript" src="libraries/jquery/js/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="libraries/datatables/js/datatables.js"></script>
+        
+        <script type="text/javascript" src="js/ws_url.js"></script>
+        <script type="text/javascript" src="js/utils.js"></script>
+        <script type="text/javascript" src="js/datatables_custom.js"></script>
+        <script type="text/javascript" src="js/summary.js"></script>
+
+    </head>
+<body>
+<div w3-include-html="header.html"></div>
+
+<div class="container container_override">
+    <div class="div_input">
+        <label>Server:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+        <select id="ddl_server" class="dropdown">
+            <option value="test" selected>Test</option>
+            <option value="beta">Beta</option>
+            <option value="prod">Production</option>
+        </select>
+    </div>
+    <div class="div_input">
+        <p id="datetime_picker">
+            <label>Date-time start:</label>
+            <input type="text" class="startdate start"/>
+            <input type="text" class="starttime start"/>
+            <br>
+            <label>Date-time end:&nbsp&nbsp</label>
+            <input type="text" class="enddate end"/>
+            <input type="text" class="endtime end"/>
+            <input type="button" id="btn_end_date_now" class="btn_generic" value="Now">
+        </p>
+    </div>
+    <div>
+        <input type="button" id="btn_fetch_summary" class="btn_generic" value="Fetch">
+    </div>
+    <div id="div_pages">
+        <table id="tbl_pages" class="table_custom">
+            <caption>Page-wise frequencies</caption>
+            <thead>
+                <tr>
+                    <th>Page</th>
+                    <th># Accesses</th>
+                    <th># Errors</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="div_access_type">
+        <table id="tbl_access" class="table_custom">
+            <caption>Access-type frequencies</caption>
+            <thead>
+                <tr>
+                    <th>Access Type</th>
+                    <th># Accesses</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="div_users">
+        <table id="tbl_users" class="table_custom">
+            <caption>User-wise frequencies</caption>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th># Accesses</th>
+                    <th># Errors</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div id="div_log_details_dialog" class="container container_override" title="Log details">
+    <div>
+        <label>Server:&nbsp;</label>
+        <label id='lbl_server'></label>
+        <div class='right_aligned'>
+            <label>Group same messages:</label> 
+            <input id='cb_grouped' type='checkbox' data-toggle='toggle' data-on="Yes" data-off="No">
+        </div>        
+        <br>
+        <label>From:&nbsp;&nbsp;&nbsp;</label>
+        <label id='lbl_start_date'></label>
+        <br>
+        <label>To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+        <label id='lbl_end_date'></label>
+        <br>
+        <div id='div_page'>
+            <label>Page:&nbsp;&nbsp;&nbsp;</label>
+            <label id='lbl_page'></label>
+        </div>
+        <div id='div_user'>
+            <label>User:&nbsp;&nbsp;&nbsp;</label>
+            <label id='lbl_user'></label>
+        </div>
+        <div id='div_type'>
+            <label>Type:&nbsp;&nbsp;&nbsp;</label>
+            <label id='lbl_type'></label>
+        </div>
+        <label>#Logs:&nbsp;&nbsp;</label>
+        <label id='lbl_num_logs'></label>
+    </div>
+    <div id='div_details_all'>
+        <table id='tbl_details_all' class='table_custom'>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Log Message</th>
+                    <th>Page</th>
+                    <th>User</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id='div_details_grouped'>
+        <table id='tbl_details_grouped' class='table_custom'>
+            <thead>
+                <tr>
+                    <th>Log Message</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+<br>
+<div w3-include-html="footer.html"></div>
+<script>w3.includeHTML();</script>
+</body>
+</html>
