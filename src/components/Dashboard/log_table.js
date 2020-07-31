@@ -11,7 +11,7 @@ export class DSlog extends React.Component{
     render() {
 
         return (
-           <label>"log"</label>
+           <label>Log</label>
         );
     }
 

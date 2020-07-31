@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import {Login} from "./components/login/index"
+import {Login, DSHome} from "./components/login/index"
 
 
 function App() {
