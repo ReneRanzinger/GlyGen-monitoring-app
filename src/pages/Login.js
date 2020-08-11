@@ -1,5 +1,6 @@
 import React, {useState} from  "react"
 import loginImg from "../login.svg"
+import { reject } from "q";
 
 
 export default function Login(props) {
@@ -7,22 +8,39 @@ export default function Login(props) {
 	const [password, setPassword] = useState("");
 
     function login() {
-          //if(this.state.username && this.state.password){
-          //this.setState({redirectToReferrer: true});
-          props.history.push("./dashboard")
+
+      
+      if(userName && password){
+        fetch('https://beta-api.glygen.org/auth/login?query={"email":"'+userName+'","password":"'+password+'"}',
+        {method: 'POST',
+        headers: { 'Content-Type': 'application/json' }})
+            .then(res => res.json())
+            .then((resJson) => {
+              console.log(resJson);
+              if(resJson.type==="success"){
+                localStorage.setItem('log_token',resJson.token);
+                props.history.push("./dashboard")
+              }
+              else{
+                alert("LOGIN ERROR!");
+              }
+             })
+             .catch((error)=>{
+               reject(error);
+             });
+      }
+      else{
+      alert("Enter Details");
+      }
+          
+
+
         }
        
       
        
        
-       function onChange(e){
-         //console.log("idhar aya");
-        //this.setState({[e.target.name]:e.target.value});
-       }
-      
-  
-  
-  
+    
       
   
   
@@ -38,11 +56,20 @@ export default function Login(props) {
             <div className="form">
               <div className="form-group">
                 <label htmlFor="username">Username</label>
-                <input type="text" name="username" placeholder="username"  onChange={onChange} />
+                <input type="text" 
+                  name="username"
+                  placeholder="username" 
+                  value={userName} 
+                  onChange={e => setUserName(e.target.value)} />
+
               </div>
               <div className="form-group">
                 <label htmlFor="password">Password</label>
-                <input type="password" name="password" placeholder="password"  onChange={onChange} />
+                <input type="password" 
+                 name="password" 
+                 placeholder="password" 
+                 value={password}  
+                 onChange={e => setPassword(e.target.value)} />
               </div>
             </div>
           </div>
