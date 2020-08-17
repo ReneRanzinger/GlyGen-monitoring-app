@@ -1,22 +1,30 @@
-import 'date-fns';
-import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import DateFnsUtils from '@date-io/date-fns';
-import ReactDOM from 'react-dom';
+import { format } from "date-fns";
+import React from "react";
+import Grid from "@material-ui/core/Grid";
+import DateFnsUtils from "@date-io/date-fns";
+import ReactDOM from "react-dom";
+import Moment from "react-moment";
+import "moment-timezone";
+import populateSummaryTables from "../utils/LoggingSummary";
+import timeToQueryFormat from "../utils/DateUtils";
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
   KeyboardDatePicker,
-} from '@material-ui/pickers';
-import Button from '@material-ui/core/Button';
-
-
+} from "@material-ui/pickers";
+import Button from "@material-ui/core/Button";
+import EnhancedTable from "../components/Table/PaginatedTable";
 
 export default function MaterialUIPickers() {
   // The first commit of Material-UI
   const date = new Date();
-  date.setDate(date.getDate()-7);
-  const [startDate, setStartDate] = React.useState((date.getMonth()+1)+'/'+ date.getDate() +'/'+date.getFullYear());
+  date.setDate(date.getDate() - 7);
+  const [startDate, setStartDate] = React.useState( 
+    new Date(date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear())
+  );
+  const [pageFrequencies, setPageFrequencies] = React.useState("");
+  const [accessFrequencies, setAccessFrequencies] = React.useState("");
+  const [userFrequencies,setUserFrequencies] = React.useState("");
   const [endDate, setEndDate] = React.useState(new Date());
   const [startTime, setStartTime] = React.useState(new Date());
   const [endTime, setEndTime] = React.useState(new Date());
@@ -30,11 +38,11 @@ export default function MaterialUIPickers() {
   };
 
   const handleStartTimeChange = (time) => {
-    setStartTime(time);
+    setStartDate(time);
   };
 
   const handleEndTimeChange = (time) => {
-    setEndTime(time);
+    setEndDate(time);
   };
 
   function setDateTimeNow() {
@@ -42,85 +50,170 @@ export default function MaterialUIPickers() {
     setEndTime(new Date());
   }
 
+  function setCustomStartDate(duration) {
+    if (duration == "30") {
+      var moment = require("moment");   
+      setStartDate(moment().add(-1, "months").toDate());
+    }
+    if (duration == "180") {
+      var moment = require("moment");
+      setStartDate(moment().add(-6, "months").toDate());
+    }
+    if (duration == "7") {
+      var moment = require("moment");
+      setStartDate(moment().add(-7, "days").toDate());
+    }
+  }
+
   return (
-    
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Grid container justify="space-around">
-        <p>Start Date Time: </p>
-        <KeyboardDatePicker
-          disableToolbar
-          variant="inline"
-          format="MM/dd/yyyy"
-          margin="normal"
-          id="date-picker-inline"
-          label="Start Date"
-          value={startDate}
-          onChange={handleStartDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
-        
-        <KeyboardTimePicker
-          margin="normal"
-          id="time-picker"
-          label="Time picker"
-          value={startTime}
-          onChange={handleStartTimeChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change time',
-          }}
-        />
+      <div id="homecontent-mid" class="row rounded">
+        <div id="homemidcontent" class="rounded">
+          <div id="home-mid-mid">
+            <label>Start Date Time: </label>
+            <KeyboardDatePicker
+              disableToolbar
+              variant="inline"
+              format="MM/dd/yyyy"
+              margin="normal"
+              id="date-picker-inline"
+              label="Start Date"
+              value={startDate}
+              maxDate={new Date()}
+              onChange={handleStartDateChange}
+              KeyboardButtonProps={{
+                "aria-label": "change date",
+              }}
+            />
 
-        <p>End Date Time: </p>
-        <KeyboardDatePicker
-          disableToolbar
-          variant="inline"
-          format="MM/dd/yyyy"
-          margin="normal"
-          id="date-picker-inline"
-          label="End Date"
-          value={endDate}
-          onChange={handleEndDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
-        <KeyboardTimePicker
-          margin="normal"
-          id="time-picker"
-          label="Time picker"
-          value={endTime}
-          onChange={handleEndTimeChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change time',
-          }}
-        />
-        <Button  className="text-center" size="small" style={{ fontWeight: "bold", color: "#2f78b7" }} 
-          variant="outline-secondary" onClick={setDateTimeNow}>Now</Button>
+            <KeyboardTimePicker
+              margin="normal"
+              id="time-picker"
+              label="Time picker"
+              timeFormat="g:ia"
+              value={startDate}
+              onChange={handleStartTimeChange}
+              KeyboardButtonProps={{
+                "aria-label": "change time",
+              }}
+            />
 
-        <Button  className="text-center" size="small" style={{ fontWeight: "bold", color: "#2f78b7" }} 
-          variant="outline-secondary" onClick={processDateTime}>Fetch</Button>  
-      </Grid>
+            <Button  className="text-center" size="small" style={{ fontWeight: "bold", color: "#2f78b7" }} 
+          variant="outline-secondary" onClick={() => setCustomStartDate("7")}>7 day</Button>
+
+            <Button
+              className="text-center"
+              size="small"
+              style={{ fontWeight: "bold", color: "#2f78b7" }}
+              variant="outline-secondary"
+              onClick={() => setCustomStartDate("30")}
+            >
+              Last Month
+            </Button>
+
+            <Button
+              className="text-center"
+              size="small"
+              style={{ fontWeight: "bold", color: "#2f78b7" }}
+              variant="outline-secondary"
+              onClick={() => setCustomStartDate("180")}
+            >
+              Half year
+            </Button>
+          </div>
+          <br /> <br /> <br />
+          <div id="home-mid-mid">
+            <label>End Date Time: </label>
+            <KeyboardDatePicker
+              disableToolbar
+              variant="inline"
+              format="MM/dd/yyyy"
+              margin="normal"
+              id="date-picker-inline"
+              label="End Date"
+              value={endDate}
+              maxDate={new Date()}
+              onChange={handleEndDateChange}
+              KeyboardButtonProps={{
+                "aria-label": "change date",
+              }}
+            />
+            <KeyboardTimePicker
+              margin="normal"
+              id="time-picker"
+              label="Time picker"
+              timeFormat="g:ia"
+              value={endDate}
+              onChange={handleEndTimeChange}
+              KeyboardButtonProps={{
+                "aria-label": "change time",
+              }}
+            />
+            <Button
+              className="text-center"
+              size="small"
+              style={{ fontWeight: "bold", color: "#2f78b7" }}
+              variant="outline-secondary"
+              onClick={setDateTimeNow}
+            >
+              Now
+            </Button>
+
+            <Button
+              className="text-center"
+              size="small"
+              style={{ fontWeight: "bold", color: "#2f78b7" }}
+              variant="outline-secondary"
+              onClick={processDateTime}
+            >
+              Fetch
+            </Button>
+          </div>
+        </div>
+      </div>
+
       <div id="display">
-      {display && <div className="base-container">
-    <p>{startDate.toString()}</p>
-    <p>{endDate.toString()}</p>
-    <p>{startTime.toString()}</p>
-    <p>{endTime.toString()}</p>
-    </div>}
+        {display && (
+          <EnhancedTable post={pageFrequencies} 
+          tableName={"Page-wise frequencies"}
+          headers= {["Page","Accesses","Error"]}
+          dataField= {["page","access","error"]}
+          allRecords={true} />
+        )}
+        {display &&  (<EnhancedTable post={accessFrequencies} 
+          tableName={"Access-type frequencies"}
+          headers= {["Access Type","Accesses"]} 
+          dataField= {["type","number"]}
+          allRecords={true}/>)}
+        {display &&  (
+          <EnhancedTable post={userFrequencies}   
+          tableName={"User-wise frequencies"}
+          headers= {["User","Accesses","Errors"]}
+          dataField={["user","access","error"]} 
+          allRecords={true}/>)}  
       </div>
     </MuiPickersUtilsProvider>
   );
 
-  function processDateTime() {
-    setDisplay(true);
-    // ReactDOM.render( <div className="base-container">
-    // <p>{startDate.toString()}</p>
-    // <p>{endDate.toString()}</p>
-    // <p>{startTime.toString()}</p>
-    // <p>{endTime.toString()}</p>
-    // </div>, document.getElementById('display'));
- 
+  async function processDateTime() {
+    if (startDate > endDate) {
+    } else {
+      //console.log(startTime.toTimeString(), "startTime");
+      //console.log(startDate,"startDate");
+      //console.log(new Date(startDate.getDate()+startTime.toTimeString()), "tessst");
+      // const formattedStartDate = format(startDate, "yyyy-MM-dd");
+      // const formattedEndDate = format(endDate,"yyyy-MM-dd");
+      // console.log(formattedStartDate, "formattedStartDate");
+      // console.log(formattedEndDate, "formattedEndDate");
+      console.log(startDate);
+      const end_date = timeToQueryFormat(endDate);
+      const start_date = timeToQueryFormat(startDate);
+      console.log(start_date);
+      var result = await populateSummaryTables(start_date, end_date);
+      setPageFrequencies(result.pages);
+      setAccessFrequencies(result.types);
+      setUserFrequencies(result.users);
+      setDisplay(true);
+    }
   }
 }
