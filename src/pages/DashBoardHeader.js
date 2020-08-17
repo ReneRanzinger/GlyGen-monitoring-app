@@ -11,13 +11,13 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import Container from "@material-ui/core/Container";
 import DeveloperBoardIcon from "@material-ui/icons/DeveloperBoard";
 
-import {
-    GLYGEN_API,
-    GLYGEN_BETA,
-    GLYGEN_DATA,
-    GLYGEN_SPARQL,
-    GLYGEN_ENV
-} from "../envVariables";
+    import {
+        GLYGEN_API,
+        GLYGEN_BETA,
+        GLYGEN_DATA,
+        GLYGEN_SPARQL,
+        GLYGEN_ENV
+    } from "../envVariables";
 import routeConstants from "../data/json/routeConstants.json";
 
 const useStyles = makeStyles((theme) => ({

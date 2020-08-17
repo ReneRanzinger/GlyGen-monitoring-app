@@ -184,7 +184,7 @@ export default function EnhancedTable(props) {
     isNumericList.push(rows[0][value] instanceof PropTypes.number);
     // console.log(rows[0]);
     // console.log(value);
-    //console.log(rows[0].value);
+    console.log(rows[0].value);
   }
   console.log(isNumericList);
   const headCellsTemp = [];
