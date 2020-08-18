@@ -4,7 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import { Row } from "react-bootstrap";
 import Container from "@material-ui/core/Container";
 import DashBoardHeader from "./DashBoardHeader";
-
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
 const dashBoardCards = [
   {
@@ -40,39 +40,63 @@ const dashBoardCards = [
 		to: "./users",
   },
 ];
-export default function DashBoard() {
-    
-     
-    // return (
-    //     <div>
-    //       <p>Hello World!</p>
-    //     </div>
-    //   );
 
+const test = 
+	{
+		title: "Feedback",
+			description:
+				"Feedback",
+			// image: glycanImg,
+			// imageText: "Glycan",
+			to: "./feedback",
+	  };
+
+
+const theme = createMuiTheme({
+	typography: {
+		fontFamily: [
+			"-apple-system",
+			"BlinkMacSystemFont",
+			'"Segoe UI"',
+			"Roboto",
+			"Oxygen",
+			"Ubuntu",
+			"Cantarell",
+			'"Fira Sans"',
+			'"Droid Sans"',
+			'"Helvetica Neue"',
+			"sans-serif",
+		].join(","),
+	},
+});
+export default function DashBoard() {
     return (
+      <ThemeProvider theme={theme}>
         <div className="base-container">
-          {/* <DashBoardHeader/> */}
+         <div><DashBoardHeader/></div>,
         <Container
 				maxWidth="xl"
 				className="gg-container"
 				style={{ width: "98%" }}>
           <Row className="show-grid">
-            <Grid container spacing={4}>
+            <Grid container spacing={8}>
               <Grid item xs={12} md={8} lg={9}>
                 <Grid
 								  container
 								  spacing={4}
 								  style={{
-									justifyContent: "center",
+									justifyContent: "SPACE-EVENLY",
 								  }}>
 								  {dashBoardCards.map((post) => (
 									  <DashBoardCard key={post.title} post={post} />
 								  ))}
+								  
 							  </Grid>
               </Grid>
             </Grid>
           </Row>
         </Container>
         </div>
+        </ThemeProvider>
       )
 }    
