@@ -5,7 +5,7 @@ import DateFnsUtils from "@date-io/date-fns";
 import ReactDOM from "react-dom";
 import Moment from "react-moment";
 import "moment-timezone";
-import populateSummaryTables from "../utils/LoggingSummary";
+import {populateSummaryTables} from "./LoggingSummary";
 import timeToQueryFormat from "../utils/DateUtils";
 import {
   MuiPickersUtilsProvider,
@@ -29,7 +29,7 @@ export default function MaterialUIPickers() {
   const [startTime, setStartTime] = React.useState(new Date());
   const [endTime, setEndTime] = React.useState(new Date());
   const [display, setDisplay] = React.useState(false);
-
+  const [misc, setMisc] = React.useState("");
   const handleStartDateChange = (date) => {
     setStartDate(date);
   };
@@ -49,6 +49,31 @@ export default function MaterialUIPickers() {
     setEndDate(new Date());
     setEndTime(new Date());
   }
+  
+  
+  const processDateTime =(e) => {
+
+    e.preventDefault();
+    if (startDate > endDate) {
+    } else {
+      const end_date = timeToQueryFormat(endDate);
+      const start_date = timeToQueryFormat(startDate);
+      const tempMisc ={
+        startDate: start_date,
+        endDate: end_date
+      }
+      
+      console.log(start_date);
+       populateSummaryTables(start_date, end_date).then(response => {
+        console.log(response.data);
+        setPageFrequencies(response.data.pages);
+        setAccessFrequencies(response.data.types);
+        setUserFrequencies(response.data.users);
+        setMisc(tempMisc);
+        setDisplay(true);
+      });
+    }
+  };
 
   function setCustomStartDate(duration) {
     if (duration == "30") {
@@ -178,42 +203,30 @@ export default function MaterialUIPickers() {
           tableName={"Page-wise frequencies"}
           headers= {["Page","Accesses","Error"]}
           dataField= {["page","access","error"]}
-          allRecords={true} />
+          linkIndex={[false,true,true]}
+          allRecords={true}
+          miscellanious={misc}
+         />
         )}
         {display &&  (<EnhancedTable post={accessFrequencies} 
           tableName={"Access-type frequencies"}
           headers= {["Access Type","Accesses"]} 
           dataField= {["type","number"]}
-          allRecords={true}/>)}
+          linkIndex={[false,true]}
+          allRecords={true}
+          miscellanious={misc}
+          />)}
         {display &&  (
           <EnhancedTable post={userFrequencies}   
           tableName={"User-wise frequencies"}
           headers= {["User","Accesses","Errors"]}
           dataField={["user","access","error"]} 
-          allRecords={true}/>)}  
+          linkIndex={[false,true,true]}
+          allRecords={true}
+          miscellanious={misc}
+          />)}  
       </div>
     </MuiPickersUtilsProvider>
   );
-
-  async function processDateTime() {
-    if (startDate > endDate) {
-    } else {
-      //console.log(startTime.toTimeString(), "startTime");
-      //console.log(startDate,"startDate");
-      //console.log(new Date(startDate.getDate()+startTime.toTimeString()), "tessst");
-      // const formattedStartDate = format(startDate, "yyyy-MM-dd");
-      // const formattedEndDate = format(endDate,"yyyy-MM-dd");
-      // console.log(formattedStartDate, "formattedStartDate");
-      // console.log(formattedEndDate, "formattedEndDate");
-      console.log(startDate);
-      const end_date = timeToQueryFormat(endDate);
-      const start_date = timeToQueryFormat(startDate);
-      console.log(start_date);
-      var result = await populateSummaryTables(start_date, end_date);
-      setPageFrequencies(result.pages);
-      setAccessFrequencies(result.types);
-      setUserFrequencies(result.users);
-      setDisplay(true);
-    }
-  }
 }
+

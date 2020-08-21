@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useState} from  "react"
 import PropTypes from 'prop-types';
+import { useHistory } from "react-router-dom";
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -14,6 +15,9 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import { Nav, Navbar, Col, Row, Image } from "react-bootstrap";
+import { Link, NavLink } from "react-router-dom";
+import DetailLogging from '../../pages/DetailLogging';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -42,14 +46,8 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-// const headCells = [
-//   { id: 'access', numeric: true, disablePadding: false, label: 'Access' },
-//   { id: 'error', numeric: true, disablePadding: false, label: 'Error' },
-//   { id: 'page', numeric: false, disablePadding: true, label: 'Page' },
-// ];
-
 function EnhancedTableHead(props) {
-  const { classes, order, orderBy, onRequestSort,headCells } = props;
+  const { classes, order, orderBy, onRequestSort, headCells } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -57,7 +55,7 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-        
+
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -103,13 +101,13 @@ const useToolbarStyles = makeStyles((theme) => ({
   highlight:
     theme.palette.type === 'light'
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark,
+      },
   title: {
     flex: '1 1 100%',
   },
@@ -117,11 +115,11 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const {tableName} = props;
+  const { tableName } = props;
 
   return (
     <Toolbar
-      
+
     >
       {(
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
@@ -169,27 +167,17 @@ export default function EnhancedTable(props) {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const { post, tableName, headers, dataField, allRecords} = props;
-  
+  const { post, tableName, headers, dataField, allRecords, linkIndex, miscellanious } = props;
   const rows = post;
-  //console.log(tableName);
-  //console.log(headers);
-  // console.log(Object.keys(rows[0]).length); // count of keys i.e. no. of columns
-   //console.log(Object.keys(rows[0]));        // name of keys
-  //console.log(Object.keys(rows[0])[0]);     // first key name
-   //console.log(typeof rows[0][2]);
-   const columns = Object.keys(rows[0]);
   const isNumericList = [];
-  for (const [index,value] of dataField.entries()) {
+  for (const [index, value] of dataField.entries()) {
     isNumericList.push(rows[0][value] instanceof PropTypes.number);
-    // console.log(rows[0]);
-    // console.log(value);
     console.log(rows[0].value);
   }
   console.log(isNumericList);
   const headCellsTemp = [];
-  for (const [index,value] of Object.keys(rows[0]).entries()) {
-    headCellsTemp.push({id:value, numeric: true, disablePadding: true, label:headers[index]});
+  for (const [index, value] of Object.keys(rows[0]).entries()) {
+    headCellsTemp.push({ id: value, numeric: true, disablePadding: true, label: headers[index] });
   }
 
   const handleRequestSort = (event, property) => {
@@ -219,14 +207,55 @@ export default function EnhancedTable(props) {
   const handleChangeDense = (event) => {
     setDense(event.target.checked);
   };
-
-
+  let history = useHistory();
+  function detailLog(row, key) {
+    var queryTemp = "";
+    if (tableName === "Page-wise frequencies") {
+        queryTemp = {
+        type: key ==="access" ? "user": "error",
+        start_date: miscellanious.startDate,
+        end_date: miscellanious.endDate,
+        page: row["page"], 
+        offset: 1,
+        limit: row[key],
+        order: "desc",
+      };
+    }
+    if (tableName === "Access-type frequencies") {
+      queryTemp = {
+        type: row["type"] === "user" ? "user" : "error",
+        start_date: miscellanious.startDate,
+        end_date: miscellanious.endDate, 
+        offset: 1,
+        limit: row[key],
+        order: "desc",
+      };
+    }
+    if (tableName === "User-wise frequencies") {
+      queryTemp = {
+        type: key ==="access" ? "user" : "error",
+        start_date: miscellanious.startDate,
+        end_date: miscellanious.endDate, 
+        user: row["user"],
+        offset: 1,
+        limit: row[key],
+        order: "desc",
+      };
+    }
+   
+    //console.log(queryTemp, "querysdfsdf");
+    history.push('./detaillogging/'+JSON.stringify(queryTemp));
+  //   history.push({
+  //     pathname: './detaillogging/',
+  //     state: { detail: "testing" }
+  // });
+  }
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
- 
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} tableName={tableName}/>
+        <EnhancedTableToolbar numSelected={selected.length} tableName={tableName} />
         <TableContainer>
           <Table
             className={classes.table}
@@ -242,24 +271,25 @@ export default function EnhancedTable(props) {
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
-              headCells = {headCellsTemp}
+              headCells={headCellsTemp}
             />
             {!allRecords && (<TableBody>
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {  
+                .map((row, index) => {
                   return (
                     <TableRow>
-                       {dataField.map((i) => (
-									  <TableCell align="right">
-                    {row[i]}
-                  </TableCell>
-								      ))}  
-                      
+                      {dataField.map((key, index) => (
+                        <TableCell align="right">
+                          {linkIndex[index] && (<Navbar.Text as={NavLink} to={`/site-specific/${row.position}`}>
+                            {row[key]}
+                          </Navbar.Text>)}
+                          {!linkIndex[index] && (row[key])
+                          }
+                        </TableCell>
+                      ))}
                     </TableRow>
-                      
                   );
-                
                 })}
               {emptyRows > 0 && (
                 <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
@@ -269,19 +299,23 @@ export default function EnhancedTable(props) {
             </TableBody>)}
             {allRecords && (<TableBody>
               {stableSort(rows, getComparator(order, orderBy))
-                .map((row, index) => {  
+                .map((row, index) => {
                   return (
                     <TableRow>
-                       {dataField.map((i) => (
-									  <TableCell align="right">
-                    {row[i]}
-                  </TableCell>
-								      ))}  
-                      
+                      {dataField.map((key, index) => (
+                        <TableCell align="right">
+                          {linkIndex[index] && (<Link onClick={() => detailLog(row,key)}>
+                            {row[key]}
+                          </Link>)}
+                          
+                          {!linkIndex[index] && (row[key])
+                          }
+                        </TableCell>
+                      ))}
                     </TableRow>
-                      
+
                   );
-                
+
                 })}
             </TableBody>)}
           </Table>
