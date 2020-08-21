@@ -32,8 +32,6 @@ export default function Login(props) {
       else{
       alert("Enter Details");
       }
-          
-
 
         }
        

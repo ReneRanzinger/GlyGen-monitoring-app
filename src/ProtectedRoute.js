@@ -28,4 +28,6 @@ export const ProtectedRoute = ({
       }}
     />
   );
+
 };
+
