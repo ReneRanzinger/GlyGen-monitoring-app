@@ -170,11 +170,11 @@ export default function EnhancedTable(props) {
   const { post, tableName, headers, dataField, allRecords, linkIndex, miscellanious } = props;
   const rows = post;
   const isNumericList = [];
-  for (const [index, value] of dataField.entries()) {
-    isNumericList.push(rows[0][value] instanceof PropTypes.number);
-    console.log(rows[0].value);
-  }
-  console.log(isNumericList);
+  // for (const [index, value] of dataField.entries()) {
+  //   isNumericList.push(rows[0][value] instanceof PropTypes.number);
+  //   console.log(rows[0].value);
+  // }
+  //console.log(isNumericList);
   const headCellsTemp = [];
   for (const [index, value] of Object.keys(rows[0]).entries()) {
     headCellsTemp.push({ id: value, numeric: true, disablePadding: true, label: headers[index] });

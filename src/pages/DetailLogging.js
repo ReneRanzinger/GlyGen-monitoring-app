@@ -1,27 +1,71 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import {populateDetailedLogs} from "./LoggingSummary";
+import {populateDetailedLogs,populateDetailedGroupLogs} from "./LoggingSummary";
 import EnhancedTable from "../components/Table/PaginatedTable";
+import { withStyles } from '@material-ui/core/styles';
+import { purple } from '@material-ui/core/colors';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 import {
     GLYGEN_SERVER,
 } from "../envVariables";
 
+const AntSwitch = withStyles((theme) => ({
+    root: {
+      width: 28,
+      height: 16,
+      padding: 0,
+      display: 'flex',
+    },
+    switchBase: {
+      padding: 2,
+      color: theme.palette.grey[500],
+      '&$checked': {
+        transform: 'translateX(12px)',
+        color: theme.palette.common.white,
+        '& + $track': {
+          opacity: 1,
+          backgroundColor: theme.palette.primary.main,
+          borderColor: theme.palette.primary.main,
+        },
+      },
+    },
+    thumb: {
+      width: 12,
+      height: 12,
+      boxShadow: 'none',
+    },
+    track: {
+      border: `1px solid ${theme.palette.grey[500]}`,
+      borderRadius: 16 / 2,
+      opacity: 1,
+      backgroundColor: theme.palette.common.white,
+    },
+    checked: {},
+  }))(Switch);
+  
 const DetailLogging = props => {
 
     let { data } = useParams();
-    const [display, setDisplay] = React.useState(false);
+    const [displayDetails, setDisplayDetails] = React.useState(false);
+    const [displayDetailsGroup, setDisplayDetailsGroup] = React.useState(false);
     const [result, setResult] = React.useState("");
-    populateDetailedLogs(data).then(response => {
-        console.log(response.data);
-        setResult(response.data.logs);
-        setDisplay(true);
+    const [resultGroup, setResultGroup] = React.useState("");
+    const [state, setState] = React.useState({
+        checkedC: false,
       });
 
-    var tableHeaders =  "";
-    var keys = "";
-    var links = "";
-    if (JSON.parse(data).page !== undefined) {
+      var tableHeaders =  "";
+      var keys = "";
+      var links = "";  
+      var groupTableHeaders = ["Log Message", "Count"];
+      var groupKeys = ["message","count"];
+      var groupLinks = [false, false];
+      if (JSON.parse(data).page !== undefined) {
         tableHeaders =["ID","Log Message", "User", "Timestamp"];
         keys = ["id","message","user","created"];
         links = [false, false, false, false];
@@ -35,8 +79,36 @@ const DetailLogging = props => {
         tableHeaders =["ID","Log Message", "Page", "User", "Timestamp"];
         keys = ["id","message","page","user","created"];
         links = [false, false, false, false, false];
-    }    
-
+    }   
+      populateDetailedLogs(data).then(response => {
+        setResult(response.data.logs);
+        setDisplayDetails(true);
+        
+        
+      });
+      
+    const handleChange = (event) => {
+        setState({ ...state, [event.target.name]: event.target.checked });
+        console.log(event.target.checked, "event.target.checked ");
+        if (event.target.checked && resultGroup === "") {
+            populateDetailedGroupLogs(data).then(response => {
+                setResultGroup(response.data.logs);
+                setDisplayDetailsGroup(true);
+                setDisplayDetails(false);
+                console.log(resultGroup);
+            });
+        }
+        else if (event.target.checked) {
+            setDisplayDetailsGroup(true);
+            setDisplayDetails(false);
+        }
+        else {
+            setDisplayDetailsGroup(false);
+            setDisplayDetails(true);
+        }
+        
+    };
+    
     return (
         <div className="base-container">
        
@@ -47,34 +119,37 @@ const DetailLogging = props => {
         {JSON.parse(data).user !== undefined &&  <p>User: {JSON.parse(data).user}</p>}       
         <p>Type: {JSON.parse(data).type}</p>
         <p>Logs: {JSON.parse(data).limit}</p>
+        <Typography component="div">
+        <Grid component="label" container alignItems="center" spacing={1} >
+            <p>Group Same messages: </p>
+          <Grid item>No</Grid>
+          <Grid item>
+            <AntSwitch checked={state.checkedC} onChange={handleChange} name="checkedC" />
+          </Grid>
+          <Grid item>Yes</Grid>
+        </Grid>
+      </Typography>
+      <br/>
         <div id="display">
-        {display &&  (<EnhancedTable post={result} 
+        {displayDetails &&  (<EnhancedTable post={result} 
           tableName={"Log Details"}
           headers = {tableHeaders}
           dataField= {keys}
           linkIndex={links}
           allRecords={false}
           />)}
+         {displayDetailsGroup &&  (<EnhancedTable post={resultGroup} 
+          tableName={"Log Details"}
+          headers = {groupTableHeaders}
+          dataField= {groupKeys}
+          linkIndex={groupLinks}
+          allRecords={true}
+          />)} 
          </div> 
         </div>
       );
 }
 
-// async function populateDetailedLogs(start_date,end_date,page,type,log_count) {
-//     var result = "";
-//     const url = 'https://beta-api.glygen.org/log/access?query={"type":"'+type+'","start_date":"'+start_date+'","end_date":"'+end_date+'","page":"'+page+'","offset":1,"limit":'+log_count+',"order":"desc"}';
-//     console.log(url);  
-//     await fetch(url,
-//         {method: 'POST',
-//         headers: { 'Content-Type': 'application/json' }})
-//         .then(res => res.json())
-//         .then((resJson) => {
-//           result = resJson;
-//          })
-//              .catch((error)=>{
-//                console.log(error);
-//              });
-//     return result;                   
-// }
+
 
 export default DetailLogging;

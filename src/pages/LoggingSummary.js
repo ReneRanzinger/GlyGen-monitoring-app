@@ -21,19 +21,7 @@ function getWsUrl (request) {
 export function populateSummaryTables(startDate, endDate) {
     const url = getWsUrl('summary')+'?query={"start_date":"'+startDate+'","end_date":"'+endDate+'"}';
     console.log(url); 
-    return getJson(url);
-    
-    // await fetch(url,
-    //     {method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' }})
-    //     .then(res => res.json())
-    //     .then((resJson) => {
-    //       result = resJson;
-    //      })
-    //          .catch((error)=>{
-    //            reject(error);
-    //          });
-    // return result;                   
+    return getJson(url);              
 }
 
 
@@ -41,18 +29,14 @@ export function populateDetailedLogs(query) {
     
     //const url = getWsUrl('details_all')+'?query={"type":"'+type+'","start_date":"'+start_date+'","end_date":"'+end_date+'","page":"'+page+'","offset":1,"limit":'+log_count+',"order":"desc"}';
     const url = getWsUrl('details_all')+'?query='+query;
-    console.log(url, "url");
-    return getJson(url);
+    //console.log(url, "url");
+    return getJson(url);              
+}
+
+export function populateDetailedGroupLogs(query) {
     
-    // await fetch(url,
-    //     {method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' }})
-    //     .then(res => res.json())
-    //     .then((resJson) => {
-    //       result = resJson;
-    //      })
-    //          .catch((error)=>{
-    //            reject(error);
-    //          });
-    // return result;                   
+    //const url = getWsUrl('details_all')+'?query={"type":"'+type+'","start_date":"'+start_date+'","end_date":"'+end_date+'","page":"'+page+'","offset":1,"limit":'+log_count+',"order":"desc"}';
+    const url = getWsUrl('details_grouped')+'?query='+query;
+    //console.log(url, "url");
+    return getJson(url);              
 }

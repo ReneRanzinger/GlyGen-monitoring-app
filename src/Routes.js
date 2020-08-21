@@ -1,6 +1,6 @@
 import React from "react";
 import Login from "./pages/Login";
-import DashBoard from "./pages/Dashboard";
+import DashBoard from "./pages/DashBoard";
 import FeedBack from "./pages/FeedBack";
 import Logging from "./pages/Logging";
 import Events from "./pages/Events";
@@ -15,10 +15,10 @@ const Routes = props => (
         <Route path="/home/" component={Login} />
         <ProtectedRoute exact path="/dashboard/" component={DashBoard} />
         <ProtectedRoute path="/feedback/" component={FeedBack} />
-        <Route path="/logging/" component={Logging} />
-        <Route path="/events/" component={Events} />
-        <Route path="/users/" component={Users} />
-        <Route path="/detaillogging/:data" component={DetailLogging} />
+        <ProtectedRoute path="/logging/" component={Logging} />
+        <ProtectedRoute path="/events/" component={Events} />
+        <ProtectedRoute path="/users/" component={Users} />
+        <ProtectedRoute path="/detaillogging/:data" component={DetailLogging} />
         <Route path="/" component={Login} />
         
     </Switch>
