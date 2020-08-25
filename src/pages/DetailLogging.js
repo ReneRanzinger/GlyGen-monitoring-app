@@ -3,12 +3,10 @@ import { useParams } from "react-router-dom";
 import {populateDetailedLogs,populateDetailedGroupLogs} from "./LoggingSummary";
 import EnhancedTable from "../components/Table/PaginatedTable";
 import { withStyles } from '@material-ui/core/styles';
-import { purple } from '@material-ui/core/colors';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import DashBoardHeader from "./DashBoardHeader";
 
 import {
     GLYGEN_SERVER,
@@ -62,29 +60,32 @@ const DetailLogging = props => {
       var tableHeaders =  "";
       var keys = "";
       var links = "";  
+      var dataTypeNumericList = "";
       var groupTableHeaders = ["Log Message", "Count"];
       var groupKeys = ["message","count"];
       var groupLinks = [false, false];
+      var groupDataTypeIsNumeric = [false,true];
       if (JSON.parse(data).page !== undefined) {
         tableHeaders =["ID","Log Message", "User", "Timestamp"];
         keys = ["id","message","user","created"];
         links = [false, false, false, false];
+        dataTypeNumericList = [false,false,false,true];
     }    
     else if (JSON.parse(data).user !== undefined) {
         tableHeaders =["ID","Log Message", "Page", "Timestamp"];
         keys = ["id","message","page","created"];
         links = [false, false, false, false];
+        dataTypeNumericList = [false,false,false,true];
     }    
     else {
         tableHeaders =["ID","Log Message", "Page", "User", "Timestamp"];
         keys = ["id","message","page","user","created"];
         links = [false, false, false, false, false];
+        dataTypeNumericList = [false,false,false,false,true];
     }   
       populateDetailedLogs(data).then(response => {
-        setResult(response.data.logs);
+        setResult(response.data.logs); 
         setDisplayDetails(true);
-        
-        
       });
       
     const handleChange = (event) => {
@@ -94,13 +95,13 @@ const DetailLogging = props => {
             populateDetailedGroupLogs(data).then(response => {
                 setResultGroup(response.data.logs);
                 setDisplayDetailsGroup(true);
-                setDisplayDetails(false);
-                console.log(resultGroup);
+                
             });
+            setDisplayDetails(false);
         }
         else if (event.target.checked) {
-            setDisplayDetailsGroup(true);
             setDisplayDetails(false);
+            setDisplayDetailsGroup(true);
         }
         else {
             setDisplayDetailsGroup(false);
@@ -108,10 +109,9 @@ const DetailLogging = props => {
         }
         
     };
-    
     return (
         <div className="base-container">
-       
+        <div><DashBoardHeader/></div>
         <p>Server: {GLYGEN_SERVER}</p>
         <p>From: {JSON.parse(data).start_date}</p>
         <p>To: {JSON.parse(data).end_date}</p>
@@ -137,6 +137,7 @@ const DetailLogging = props => {
           dataField= {keys}
           linkIndex={links}
           allRecords={false}
+          dataTypeIsNumeric = {dataTypeNumericList}
           />)}
          {displayDetailsGroup &&  (<EnhancedTable post={resultGroup} 
           tableName={"Log Details"}
@@ -144,6 +145,7 @@ const DetailLogging = props => {
           dataField= {groupKeys}
           linkIndex={groupLinks}
           allRecords={true}
+          dataTypeIsNumeric = {groupDataTypeIsNumeric}
           />)} 
          </div> 
         </div>

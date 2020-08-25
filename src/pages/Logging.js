@@ -1,9 +1,6 @@
-import { format } from "date-fns";
+
 import React from "react";
-import Grid from "@material-ui/core/Grid";
 import DateFnsUtils from "@date-io/date-fns";
-import ReactDOM from "react-dom";
-import Moment from "react-moment";
 import "moment-timezone";
 import {populateSummaryTables} from "./LoggingSummary";
 import timeToQueryFormat from "../utils/DateUtils";
@@ -14,6 +11,7 @@ import {
 } from "@material-ui/pickers";
 import Button from "@material-ui/core/Button";
 import EnhancedTable from "../components/Table/PaginatedTable";
+import DashBoardHeader from "./DashBoardHeader";
 
 export default function MaterialUIPickers() {
   // The first commit of Material-UI
@@ -92,6 +90,7 @@ export default function MaterialUIPickers() {
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <div><DashBoardHeader/></div>
       <div id="homecontent-mid" class="row rounded">
         <div id="homemidcontent" class="rounded">
           <div id="home-mid-mid">
@@ -196,31 +195,57 @@ export default function MaterialUIPickers() {
           </div>
         </div>
       </div>
-
+      <br/>
+        <br/>
+        <br/>
+        <br/> 
+        <br/>
+        <br/>
+        <br/>
+        <br/>
       <div id="display">
         {display && (
           <EnhancedTable post={pageFrequencies} 
           tableName={"Page-wise frequencies"}
           headers= {["Page","Accesses","Error"]}
           dataField= {["page","access","error"]}
+          dataTypeIsNumeric={[false, true, true]}
           linkIndex={[false,true,true]}
           allRecords={true}
           miscellanious={misc}
          />
         )}
+        <br/>
+        <br/>
+        <br/>
+        <br/> 
+        <br/>
+        <br/>
+        <br/>
+        <br/>
         {display &&  (<EnhancedTable post={accessFrequencies} 
           tableName={"Access-type frequencies"}
           headers= {["Access Type","Accesses"]} 
           dataField= {["type","number"]}
+          dataTypeIsNumeric={[false,true]}
           linkIndex={[false,true]}
           allRecords={true}
           miscellanious={misc}
           />)}
+        <br/>
+        <br/>
+        <br/>
+        <br/> 
+        <br/>
+        <br/>
+        <br/>
+        <br/>
         {display &&  (
           <EnhancedTable post={userFrequencies}   
           tableName={"User-wise frequencies"}
           headers= {["User","Accesses","Errors"]}
           dataField={["user","access","error"]} 
+          dataTypeIsNumeric={[false,true,true]}
           linkIndex={[false,true,true]}
           allRecords={true}
           miscellanious={misc}
