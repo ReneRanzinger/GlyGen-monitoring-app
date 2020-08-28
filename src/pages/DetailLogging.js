@@ -49,14 +49,12 @@ const AntSwitch = withStyles((theme) => ({
 const DetailLogging = props => {
 
     let { data } = useParams();
-    const [displayDetails, setDisplayDetails] = React.useState(false);
-    const [displayDetailsGroup, setDisplayDetailsGroup] = React.useState(false);
+    const [displayDetails, setDisplayDetails] = React.useState(true);
     const [result, setResult] = React.useState("");
     const [resultGroup, setResultGroup] = React.useState("");
     const [state, setState] = React.useState({
         checkedC: false,
       });
-
       var tableHeaders =  "";
       var keys = "";
       var links = "";  
@@ -85,29 +83,20 @@ const DetailLogging = props => {
     }   
       populateDetailedLogs(data).then(response => {
         setResult(response.data.logs); 
-        setDisplayDetails(true);
       });
-      
+
+      populateDetailedGroupLogs(data).then(response => {
+        setResultGroup(response.data.logs);
+    });
+     
     const handleChange = (event) => {
         setState({ ...state, [event.target.name]: event.target.checked });
-        console.log(event.target.checked, "event.target.checked ");
-        if (event.target.checked && resultGroup === "") {
-            populateDetailedGroupLogs(data).then(response => {
-                setResultGroup(response.data.logs);
-                setDisplayDetailsGroup(true);
-                
-            });
+        if (event.target.checked) {
             setDisplayDetails(false);
-        }
-        else if (event.target.checked) {
-            setDisplayDetails(false);
-            setDisplayDetailsGroup(true);
         }
         else {
-            setDisplayDetailsGroup(false);
             setDisplayDetails(true);
         }
-        
     };
     return (
         <div className="base-container">
@@ -130,8 +119,9 @@ const DetailLogging = props => {
         </Grid>
       </Typography>
       <br/>
-        <div id="display">
-        {displayDetails &&  (<EnhancedTable post={result} 
+        <div style={{ display: displayDetails ? "block" : "none" }}>
+    
+        {(result) && (<EnhancedTable post={result} 
           tableName={"Log Details"}
           headers = {tableHeaders}
           dataField= {keys}
@@ -139,15 +129,17 @@ const DetailLogging = props => {
           allRecords={false}
           dataTypeIsNumeric = {dataTypeNumericList}
           />)}
-         {displayDetailsGroup &&  (<EnhancedTable post={resultGroup} 
-          tableName={"Log Details"}
+          </div>
+          <div style={{ display: !displayDetails ? "block" : "none" }}>
+          {(resultGroup) && (<EnhancedTable post={resultGroup} 
+          tableName={" Group Log Details"}
           headers = {groupTableHeaders}
           dataField= {groupKeys}
           linkIndex={groupLinks}
           allRecords={true}
           dataTypeIsNumeric = {groupDataTypeIsNumeric}
-          />)} 
-         </div> 
+          />)}  
+         </div>
         </div>
       );
 }
