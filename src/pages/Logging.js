@@ -11,7 +11,7 @@ import {
 } from "@material-ui/pickers";
 import Button from "@material-ui/core/Button";
 import EnhancedTable from "../components/Table/PaginatedTable";
-import DashBoardHeader from "./DashBoardHeader";
+import ProtectedBootstrapNavbar from "./ProtectedBootstrapNavbar"
 
 export default function MaterialUIPickers() {
   // The first commit of Material-UI
@@ -90,7 +90,7 @@ export default function MaterialUIPickers() {
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <div><DashBoardHeader/></div>
+      	<div className="header">  <ProtectedBootstrapNavbar/> </div>
       <div id="homecontent-mid" class="row rounded">
         <div id="homemidcontent" class="rounded">
           <div id="home-mid-mid">

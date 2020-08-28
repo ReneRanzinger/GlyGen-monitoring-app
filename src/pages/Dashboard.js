@@ -3,7 +3,7 @@ import DashBoardCard from "../components/cards/DashBoardCard"
 import Grid from "@material-ui/core/Grid";
 import { Row } from "react-bootstrap";
 import Container from "@material-ui/core/Container";
-import DashBoardHeader from "./DashBoardHeader";
+import ProtectedBootstrapNavbar from "./ProtectedBootstrapNavbar"
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
 const dashBoardCards = [
@@ -73,7 +73,8 @@ export default function DashBoard() {
     return (
       <ThemeProvider theme={theme}>
         <div className="base-container">
-         <div><DashBoardHeader/></div>,
+
+		<div className="header">  <ProtectedBootstrapNavbar/> </div>
         <Container
 				maxWidth="xl"
 				className="gg-container"
