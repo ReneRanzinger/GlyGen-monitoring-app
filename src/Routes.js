@@ -1,6 +1,6 @@
 import React from "react";
 import Login from "./pages/Login";
-import DashBoard from "./pages/Dashboard";
+import DashBoard from "./pages/DashBoard";
 import FeedBack from "./pages/FeedBack";
 import Logging from "./pages/Logging";
 import Events from "./pages/Events";
