@@ -41,15 +41,15 @@ const dashBoardCards = [
   },
 ];
 
-const test = 
-	{
-		title: "Feedback",
-			description:
-				"Feedback",
-			// image: glycanImg,
-			// imageText: "Glycan",
-			to: "./feedback",
-	  };
+// const test = 
+// 	{
+// 		title: "Feedback",
+// 			description:
+// 				"Feedback",
+// 			// image: glycanImg,
+// 			// imageText: "Glycan",
+// 			to: "./feedback",
+// 	  };
 
 
 const theme = createMuiTheme({
